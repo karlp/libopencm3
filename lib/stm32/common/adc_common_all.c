@@ -1,8 +1,4 @@
-/** @defgroup STM32F1xx_adc_file ADC
-
-@ingroup STM32F1xx
-
-@brief <b>libopencm3 STM32F1xx Analog to Digital Converters</b>
+/** @addtogroup adc_file
 
 @version 1.0.0
 
@@ -11,13 +7,13 @@
 
 @date 18 August 2012
 
-This library supports the A/D Converter Control System in the STM32F1xx series
+This library supports the A/D Converter Control System in the STM32xx series
 of ARM Cortex Microcontrollers by ST Microelectronics.
 
 Devices can have up to three A/D converters each with their own set of registers.
 However all the A/D converters share a common clock which is prescaled from the APB2
 clock by default by a minimum factor of 2 to a maximum of 8.
-
+ * FIXME - not true for L1
 Each A/D converter has up to 18 channels:
 @li On ADC1 the analog channels 16 and 17 are internally connected to the temperature
 sensor and V<sub>REFINT</sub>, respectively.
@@ -104,7 +100,7 @@ LGPL License Terms @ref lgpl_license
 
 /**@{*/
 
-#include <libopencm3/stm32/f1/adc.h>
+#include <libopencm3/stm32/adc.h>
 
 /*-----------------------------------------------------------------------------*/
 /** @brief ADC Power On
@@ -769,8 +765,7 @@ mode.
 
 void adc_enable_dma(u32 adc)
 {
-	if ((adc == ADC1) | (adc == ADC3))
-		ADC_CR2(adc) |= ADC_CR2_DMA;
+	ADC_CR2(adc) |= ADC_CR2_DMA;
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -781,8 +776,7 @@ void adc_enable_dma(u32 adc)
 
 void adc_disable_dma(u32 adc)
 {
-	if ((adc == ADC1) | (adc == ADC3))
-		ADC_CR2(adc) &= ~ADC_CR2_DMA;
+	ADC_CR2(adc) &= ~ADC_CR2_DMA;
 }
 
 /*-----------------------------------------------------------------------------*/

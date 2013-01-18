@@ -19,7 +19,7 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* THIS FILE SHOULD NOT BE INCLUDED DIRECTLY, BUT ONLY VIA SPI.H */
+/* THIS FILE SHOULD NOT BE INCLUDED DIRECTLY, BUT ONLY VIA CRC.H */
 
 #ifndef LIBOPENCM3_CRC_COMMON_ALL_H
 #define LIBOPENCM3_CRC_COMMON_ALL_H
