@@ -556,33 +556,6 @@ void adc_disable_eoc_interrupt(u32 adc)
 	ADC_CR1(adc) &= ~ADC_CR1_EOCIE;
 }
 
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Enable The Temperature Sensor
-
-This enables both the sensor and the reference voltage measurements on channels
-16 and 17.
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-*/
-
-void adc_enable_temperature_sensor(u32 adc)
-{
-	ADC_CR2(adc) |= ADC_CR2_TSVREFE;
-}
-
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Disable The Temperature Sensor
-
-Disabling this will reduce power consumption from the sensor and the reference
-voltage measurements.
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-*/
-
-void adc_disable_temperature_sensor(u32 adc)
-{
-	ADC_CR2(adc) &= ~ADC_CR2_TSVREFE;
-}
 
 /*-----------------------------------------------------------------------------*/
 /** @brief ADC Software Triggered Conversion on Regular Channels
@@ -594,6 +567,7 @@ starts.
 Note this is a software trigger and requires triggering to be enabled and the
 trigger source to be set appropriately otherwise conversion will not start.
 This is not the same as the ADC start conversion operation.
+ * NOTE only applies to F1!
 
 @param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
 */
@@ -604,7 +578,7 @@ void adc_start_conversion_regular(u32 adc)
 	ADC_CR2(adc) |= ADC_CR2_SWSTART;
 
 	/* Wait until the ADC starts the conversion. */
-	while (ADC_CR2(adc) & ADC_CR2_SWSTART);
+	// FIXME KARL!!! while (ADC_CR2(adc) & ADC_CR2_SWSTART);
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -630,106 +604,6 @@ void adc_start_conversion_injected(u32 adc)
 	while (ADC_CR2(adc) & ADC_CR2_JSWSTART);
 }
 
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Enable an External Trigger for Regular Channels
-
-This enables an external trigger for set of defined regular channels.
-
-For ADC1 and ADC2
-@li Timer 1 CC1 event
-@li Timer 1 CC2 event
-@li Timer 1 CC3 event
-@li Timer 2 CC2 event
-@li Timer 3 TRGO event
-@li Timer 4 CC4 event
-@li EXTI (TIM8_TRGO is also possible on some devices, see datasheet)
-@li Software Start
-
-For ADC3
-@li Timer 3 CC1 event
-@li Timer 2 CC3 event
-@li Timer 1 CC3 event
-@li Timer 8 CC1 event
-@li Timer 8 TRGO event
-@li Timer 5 CC1 event
-@li Timer 5 CC3 event
-@li Software Start
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-@param[in] trigger Unsigned int8. Trigger identifier @ref adc_trigger_regular_12
-for ADC1 and ADC2, or @ref adc_trigger_regular_3 for ADC3.
-*/
-
-void adc_enable_external_trigger_regular(u32 adc, u32 trigger)
-{
-	u32 reg32;
-
-	reg32 = (ADC_CR2(adc) & ~(ADC_CR2_EXTSEL_MASK));
-	reg32 |= (trigger);
-	ADC_CR2(adc) = reg32;
-	ADC_CR2(adc) |= ADC_CR2_EXTTRIG;
-}
-
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Disable an External Trigger for Regular Channels
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-*/
-
-void adc_disable_external_trigger_regular(u32 adc)
-{
-	ADC_CR2(adc) &= ~ADC_CR2_EXTTRIG;
-}
-
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Enable an External Trigger for Injected Channels
-
-This enables an external trigger for set of defined injected channels.
-
-For ADC1 and ADC2
-@li Timer 1 TRGO event
-@li Timer 1 CC4 event
-@li Timer 2 TRGO event
-@li Timer 2 CC1 event
-@li Timer 3 CC4 event
-@li Timer 4 TRGO event
-@li EXTI (TIM8 CC4 is also possible on some devices, see datasheet)
-@li Software Start
-
-For ADC3
-@li Timer 1 TRGO event
-@li Timer 1 CC4 event
-@li Timer 4 CC3 event
-@li Timer 8 CC2 event
-@li Timer 8 CC4 event
-@li Timer 5 TRGO event
-@li Timer 5 CC4 event
-@li Software Start
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-@param[in] trigger Unsigned int8. Trigger identifier @ref adc_trigger_injected_12
-for ADC1 and ADC2, or @ref adc_trigger_injected_3 for ADC3.
-*/
-void adc_enable_external_trigger_injected(u32 adc, u32 trigger)
-{
-	u32 reg32;
-
-	reg32 = (ADC_CR2(adc) & ~(ADC_CR2_JEXTSEL_MASK)); /* Clear bits [12:14]. */
-	reg32 |= (trigger);
-	ADC_CR2(adc) = reg32;
-	ADC_CR2(adc) |= ADC_CR2_JEXTTRIG;
-}
-
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Disable an External Trigger for Injected Channels
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-*/
-
-void adc_disable_external_trigger_injected(u32 adc)
-{
-	ADC_CR2(adc) &= ~ADC_CR2_JEXTTRIG;
-}
 
 /*-----------------------------------------------------------------------------*/
 /** @brief ADC Set the Data as Left Aligned
@@ -777,40 +651,6 @@ void adc_enable_dma(u32 adc)
 void adc_disable_dma(u32 adc)
 {
 	ADC_CR2(adc) &= ~ADC_CR2_DMA;
-}
-
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Initialize Calibration Registers
-
-This resets the calibration registers. It is not clear if this is required to be
-done before every calibration operation.
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-*/
-
-void adc_reset_calibration(u32 adc)
-{
-	ADC_CR2(adc) |= ADC_CR2_RSTCAL;
-	while (ADC_CR2(adc) & ADC_CR2_RSTCAL);
-}
-
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Calibration
-
-The calibration data for the ADC is recomputed. The hardware clears the
-calibration status flag when calibration is complete. This function does not return
-until this happens and the ADC is ready for use.
-
-The ADC must have been powered down for at least 2 ADC clock cycles, then powered on.
-before calibration starts
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-*/
-
-void adc_calibration(u32 adc)
-{
-	ADC_CR2(adc) |= ADC_CR2_CAL;
-	while (ADC_CR2(adc) & ADC_CR2_CAL);
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -871,56 +711,6 @@ void adc_off(u32 adc)
 	ADC_CR2(adc) &= ~ADC_CR2_ADON;
 }
 
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Set the Sample Time for a Single Channel
-
-The sampling time can be selected in ADC clock cycles from 1.5 to 239.5.
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-@param[in] channel Unsigned int8. ADC Channel integer 0..18 or from @ref adc_channel.
-@param[in] time Unsigned int8. Sampling time selection from @ref adc_sample_rg.
-*/
-
-void adc_set_sample_time(u32 adc, u8 channel, u8 time)
-{
-	u32 reg32;
-
-	if (channel < 10) {
-		reg32 = ADC_SMPR2(adc);
-		reg32 &= ~(0x7 << (channel * 3));
-		reg32 |= (time << (channel * 3));
-		ADC_SMPR2(adc) = reg32;
-	} else {
-		reg32 = ADC_SMPR1(adc);
-		reg32 &= ~(0x7 << ((channel - 10) * 3));
-		reg32 |= (time << ((channel - 10) * 3));
-		ADC_SMPR1(adc) = reg32;
-	}
-}
-
-/*-----------------------------------------------------------------------------*/
-/** @brief ADC Set the Sample Time for All Channels
-
-The sampling time can be selected in ADC clock cycles from 1.5 to 239.5, same for
-all channels.
-
-@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
-@param[in] time Unsigned int8. Sampling time selection from @ref adc_sample_rg.
-*/
-
-void adc_set_sample_time_on_all_channels(u32 adc, u8 time)
-{
-	u8 i;
-	u32 reg32 = 0;
-
-	for (i = 0; i <= 9; i++)
-		reg32 |= (time << (i * 3));
-	ADC_SMPR2(adc) = reg32;
-
-	for (i = 10; i <= 17; i++)
-		reg32 |= (time << ((i - 10) * 3));
-	ADC_SMPR1(adc) = reg32;
-}
 
 /*-----------------------------------------------------------------------------*/
 /** @brief ADC Set Analog Watchdog Upper Threshold
@@ -972,6 +762,7 @@ void adc_set_regular_sequence(u32 adc, u8 length, u8 channel[])
 	u8 i = 0;
 
 	/* Maximum sequence length is 16 channels. */
+	// FIXME - not for l1!
 	if (length > 16)
 		return;
 
@@ -1020,16 +811,6 @@ void adc_set_injected_sequence(u32 adc, u8 length, u8 channel[])
 }
 
 /*-----------------------------------------------------------------------------*/
-
-/* Aliases */
-
-#ifdef __GNUC__
-void adc_set_continous_conversion_mode(u32 adc) __attribute__ ((alias("adc_set_continuous_conversion_mode")));
-void adc_set_conversion_time(u32 adc, u8 channel, u8 time) __attribute__ ((alias ("adc_set_sample_time")));
-void adc_set_conversion_time_on_all_channels(u32 adc, u8 time) __attribute__ ((alias ("adc_set_sample_time_on_all_channels")));
-void adc_enable_jeoc_interrupt(u32 adc) __attribute__ ((alias ("adc_enable_eoc_interrupt_injected")));
-void adc_disable_jeoc_interrupt(u32 adc) __attribute__ ((alias ("adc_disable_eoc_interrupt_injected")));
-#endif
 
 /**@}*/
 

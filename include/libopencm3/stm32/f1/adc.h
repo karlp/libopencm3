@@ -37,6 +37,102 @@ LGPL License Terms @ref lgpl_license
 #include <libopencm3/stm32/memorymap.h>
 #include <libopencm3/stm32/common/adc_common_f1234.h>
 
+/* ADC injected channel data offset register x (ADC_JOFRx) (x=1..4) */
+#define ADC_JOFR1(block)		MMIO32(block + 0x14)
+#define ADC_JOFR2(block)		MMIO32(block + 0x18)
+#define ADC_JOFR3(block)		MMIO32(block + 0x1c)
+#define ADC_JOFR4(block)		MMIO32(block + 0x20)
+#define ADC1_JOFR1			ADC_JOFR1(ADC1)
+#define ADC1_JOFR2			ADC_JOFR2(ADC1)
+#define ADC1_JOFR3			ADC_JOFR3(ADC1)
+#define ADC1_JOFR4			ADC_JOFR4(ADC1)
+
+/* ADC watchdog high threshold register (ADC_HTR) */
+#define ADC_HTR(block)			MMIO32(block + 0x24)
+#define ADC1_HTR			ADC_HTR(ADC1)
+
+/* ADC watchdog low threshold register (ADC_LTR) */
+#define ADC_LTR(block)			MMIO32(block + 0x28)
+#define ADC1_LTR			ADC_LTR(ADC1)
+
+/* ADC regular sequence register 1 (ADC_SQR1) */
+#define ADC_SQR1(block)			MMIO32(block + 0x2c)
+#define ADC1_SQR1			ADC_SQR1(ADC1)
+
+/* ADC regular sequence register 2 (ADC_SQR2) */
+#define ADC_SQR2(block)			MMIO32(block + 0x30)
+#define ADC1_SQR2			ADC_SQR2(ADC1)
+
+/* ADC regular sequence register 3 (ADC_SQR3) */
+#define ADC_SQR3(block)			MMIO32(block + 0x34)
+#define ADC1_SQR3			ADC_SQR3(ADC1)
+
+/* ADC injected sequence register (ADC_JSQR) */
+#define ADC_JSQR(block)			MMIO32(block + 0x38)
+#define ADC1_JSQR			ADC_JSQR(ADC1)
+
+/* ADC injected data register x (ADC_JDRx) (x=1..4) */
+#define ADC_JDR1(block)			MMIO32(block + 0x3c)
+#define ADC_JDR2(block)			MMIO32(block + 0x40)
+#define ADC_JDR3(block)			MMIO32(block + 0x44)
+#define ADC_JDR4(block)			MMIO32(block + 0x48)
+#define ADC1_JDR1			ADC_JDR1(ADC1)
+#define ADC1_JDR2			ADC_JDR2(ADC1)
+#define ADC1_JDR3			ADC_JDR3(ADC1)
+#define ADC1_JDR4			ADC_JDR4(ADC1)
+
+/* ADC regular data register (ADC_DR) */
+#define ADC_DR(block)			MMIO32(block + 0x4c)
+#define ADC1_DR				ADC_DR(ADC1)
+
+
+
+/* --- ADC_CR1 values ------------------------------------------------------ */
+
+
+/* DUALMOD[3:0]: Dual mode selection. (ADC1 only) */
+/* Legend:
+ * IND: Independent mode.
+ * CRSISM: Combined regular simultaneous + injected simultaneous mode.
+ * CRSATM: Combined regular simultaneous + alternate trigger mode.
+ * CISFIM: Combined injected simultaneous + fast interleaved mode.
+ * CISSIM: Combined injected simultaneous + slow interleaved mode.
+ * ISM: Injected simultaneous mode only.
+ * RSM: Regular simultaneous mode only.
+ * FIM: Fast interleaved mode only.
+ * SIM: Slow interleaved mode only.
+ * ATM: Alternate trigger mode only.
+ */
+/****************************************************************************/
+/* ADC_CR1 DUALMOD[3:0] ADC Mode Selection */
+/** @defgroup adc_cr1_dualmod ADC Mode Selection
+@ingroup STM32F1xx_adc_defines
+
+@{*/
+/** Independent (non-dual) mode */
+#define ADC_CR1_DUALMOD_IND             (0x0 << 16)
+/** Combined regular simultaneous + injected simultaneous mode. */
+#define ADC_CR1_DUALMOD_CRSISM          (0x1 << 16)
+/** Combined regular simultaneous + alternate trigger mode. */
+#define ADC_CR1_DUALMOD_CRSATM          (0x2 << 16)
+/** Combined injected simultaneous + fast interleaved mode. */
+#define ADC_CR1_DUALMOD_CISFIM          (0x3 << 16)
+/** Combined injected simultaneous + slow interleaved mode. */
+#define ADC_CR1_DUALMOD_CISSIM          (0x4 << 16)
+/** Injected simultaneous mode only. */
+#define ADC_CR1_DUALMOD_ISM             (0x5 << 16)
+/** Regular simultaneous mode only. */
+#define ADC_CR1_DUALMOD_RSM             (0x6 << 16)
+/** Fast interleaved mode only. */
+#define ADC_CR1_DUALMOD_FIM             (0x7 << 16)
+/** Slow interleaved mode only. */
+#define ADC_CR1_DUALMOD_SIM             (0x8 << 16)
+/** Alternate trigger mode only. */
+#define ADC_CR1_DUALMOD_ATM             (0x9 << 16)
+/**@}*/
+#define ADC_CR1_DUALMOD_MASK		(0xF << 16)
+#define ADC_CR1_DUALMOD_SHIFT		16
+
 
 /* --- ADC_CR2 values ------------------------------------------------------ */
 
@@ -162,5 +258,113 @@ LGPL License Terms @ref lgpl_license
 
 #define ADC_CR2_JEXTSEL_MASK		(0x7 << 12)
 #define ADC_CR2_JEXTSEL_SHIFT		12
+
+/* RSTCAL: Reset calibration. */
+#define ADC_CR2_RSTCAL			(1 << 3)
+
+/* CAL: A/D Calibration. */
+#define ADC_CR2_CAL			(1 << 2)
+
+
+	/* --- ADC_SMPR1 values ---------------------------------------------------- */
+#define ADC_SMPR1_SMP17_LSB		21
+#define ADC_SMPR1_SMP16_LSB		18
+#define ADC_SMPR1_SMP15_LSB		15
+#define ADC_SMPR1_SMP14_LSB		12
+#define ADC_SMPR1_SMP13_LSB		9
+#define ADC_SMPR1_SMP12_LSB		6
+#define ADC_SMPR1_SMP11_LSB		3
+#define ADC_SMPR1_SMP10_LSB		0
+#define ADC_SMPR1_SMP17_MSK		(0x7 << ADC_SMP17_LSB)
+#define ADC_SMPR1_SMP16_MSK		(0x7 << ADC_SMP16_LSB)
+#define ADC_SMPR1_SMP15_MSK		(0x7 << ADC_SMP15_LSB)
+#define ADC_SMPR1_SMP14_MSK		(0x7 << ADC_SMP14_LSB)
+#define ADC_SMPR1_SMP13_MSK		(0x7 << ADC_SMP13_LSB)
+#define ADC_SMPR1_SMP12_MSK		(0x7 << ADC_SMP12_LSB)
+#define ADC_SMPR1_SMP11_MSK		(0x7 << ADC_SMP11_LSB)
+#define ADC_SMPR1_SMP10_MSK		(0x7 << ADC_SMP10_LSB)
+
+/* --- ADC_SMPR2 values ---------------------------------------------------- */
+
+#define ADC_SMPR2_SMP9_LSB		27
+#define ADC_SMPR2_SMP8_LSB		24
+#define ADC_SMPR2_SMP7_LSB		21
+#define ADC_SMPR2_SMP6_LSB		18
+#define ADC_SMPR2_SMP5_LSB		15
+#define ADC_SMPR2_SMP4_LSB		12
+#define ADC_SMPR2_SMP3_LSB		9
+#define ADC_SMPR2_SMP2_LSB		6
+#define ADC_SMPR2_SMP1_LSB		3
+#define ADC_SMPR2_SMP0_LSB		0
+#define ADC_SMPR2_SMP9_MSK		(0x7 << ADC_SMP9_LSB)
+#define ADC_SMPR2_SMP8_MSK		(0x7 << ADC_SMP8_LSB)
+#define ADC_SMPR2_SMP7_MSK		(0x7 << ADC_SMP7_LSB)
+#define ADC_SMPR2_SMP6_MSK		(0x7 << ADC_SMP6_LSB)
+#define ADC_SMPR2_SMP5_MSK		(0x7 << ADC_SMP5_LSB)
+#define ADC_SMPR2_SMP4_MSK		(0x7 << ADC_SMP4_LSB)
+#define ADC_SMPR2_SMP3_MSK		(0x7 << ADC_SMP3_LSB)
+#define ADC_SMPR2_SMP2_MSK		(0x7 << ADC_SMP2_LSB)
+#define ADC_SMPR2_SMP1_MSK		(0x7 << ADC_SMP1_LSB)
+#define ADC_SMPR2_SMP0_MSK		(0x7 << ADC_SMP0_LSB)
+
+/* --- ADC_SMPRx generic values -------------------------------------------- */
+/****************************************************************************/
+/* ADC_SMPRG ADC Sample Time Selection for Channels */
+/** @defgroup adc_sample_rg ADC Sample Time Selection for All Channels
+@ingroup STM32F1xx_adc_defines
+
+@{*/
+#define ADC_SMPR_SMP_1DOT5CYC		0x0
+#define ADC_SMPR_SMP_7DOT5CYC		0x1
+#define ADC_SMPR_SMP_13DOT5CYC		0x2
+#define ADC_SMPR_SMP_28DOT5CYC		0x3
+#define ADC_SMPR_SMP_41DOT5CYC		0x4
+#define ADC_SMPR_SMP_55DOT5CYC		0x5
+#define ADC_SMPR_SMP_71DOT5CYC		0x6
+#define ADC_SMPR_SMP_239DOT5CYC		0x7
+/**@}*/
+
+
+/* --- ADC_SQR1 values ----------------------------------------------------- */
+#define ADC_SQR_MASK			0x1f
+#define ADC_SQR1_SQ16_LSB		15
+#define ADC_SQR1_SQ15_LSB		10
+#define ADC_SQR1_SQ14_LSB		5
+#define ADC_SQR1_SQ13_LSB		0
+#define ADC_SQR1_L_MSK			(0xf << ADC_SQR1_L_LSB)
+#define ADC_SQR1_SQ16_MSK		(0x1f << ADC_SQR1_SQ16_LSB)
+#define ADC_SQR1_SQ15_MSK		(0x1f << ADC_SQR1_SQ15_LSB)
+#define ADC_SQR1_SQ14_MSK		(0x1f << ADC_SQR1_SQ14_LSB)
+#define ADC_SQR1_SQ13_MSK		(0x1f << ADC_SQR1_SQ13_LSB)
+
+/* --- ADC_SQR2 values ----------------------------------------------------- */
+
+#define ADC_SQR2_SQ12_LSB		25
+#define ADC_SQR2_SQ11_LSB		20
+#define ADC_SQR2_SQ10_LSB		15
+#define ADC_SQR2_SQ9_LSB		10
+#define ADC_SQR2_SQ8_LSB		5
+#define ADC_SQR2_SQ7_LSB		0
+#define ADC_SQR2_SQ12_MSK		(0x1f << ADC_SQR2_SQ12_LSB)
+#define ADC_SQR2_SQ11_MSK		(0x1f << ADC_SQR2_SQ11_LSB)
+#define ADC_SQR2_SQ10_MSK		(0x1f << ADC_SQR2_SQ10_LSB)
+#define ADC_SQR2_SQ9_MSK		(0x1f << ADC_SQR2_SQ9_LSB)
+#define ADC_SQR2_SQ8_MSK		(0x1f << ADC_SQR2_SQ8_LSB)
+#define ADC_SQR2_SQ7_MSK		(0x1f << ADC_SQR2_SQ7_LSB)
+
+/* --- ADC_SQR3 values ----------------------------------------------------- */
+
+#define ADC_SQR3_SQ6_LSB		25
+#define ADC_SQR3_SQ5_LSB		20
+#define ADC_SQR3_SQ4_LSB		15
+#define ADC_SQR3_SQ3_LSB		10
+#define ADC_SQR3_SQ2_LSB		5
+#define ADC_SQR3_SQ1_LSB		0
+#define ADC_SQR3_SQ6_MSK		(0x1f << ADC_SQR3_SQ6_LSB)
+#define ADC_SQR3_SQ5_MSK		(0x1f << ADC_SQR3_SQ5_LSB)
+#define ADC_SQR3_SQ4_MSK		(0x1f << ADC_SQR3_SQ4_LSB)
+#define ADC_SQR3_SQ3_MSK		(0x1f << ADC_SQR3_SQ3_LSB)
+#define ADC_SQR3_SQ2_MSK		(0x1f << ADC_SQR3_SQ2_LSB)
+#define ADC_SQR3_SQ1_MSK		(0x1f << ADC_SQR3_SQ1_LSB)
 
 #endif

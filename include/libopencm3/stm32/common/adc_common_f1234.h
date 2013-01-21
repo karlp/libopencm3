@@ -20,6 +20,11 @@
 
 /* THIS FILE SHOULD NOT BE INCLUDED DIRECTLY, BUT ONLY VIA ADC.H */
 
+/* 
+ * TODO - this is really just the same as adc_common, but with support for 
+ * ADC2 and ADC3. There's probably a better way....
+ */
+
 #ifndef LIBOPENCM3_ADC_COMMON_F1234_H
 #define LIBOPENCM3_ADC_COMMON_F1234_H
 
