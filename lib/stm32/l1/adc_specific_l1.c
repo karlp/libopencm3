@@ -82,6 +82,7 @@ void adc_set_sample_time_on_all_channels(u32 adc, u8 time)
 
 	for (i = 0; i <= 9; i++)
 		reg32 |= (time << (i * 3));
+	ADC_SMPR0(adc) = reg32;
 	ADC_SMPR1(adc) = reg32;
 	ADC_SMPR2(adc) = reg32;
 	ADC_SMPR3(adc) = reg32;
