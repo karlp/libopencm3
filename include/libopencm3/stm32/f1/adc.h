@@ -37,6 +37,9 @@ LGPL License Terms @ref lgpl_license
 #include <libopencm3/stm32/memorymap.h>
 #include <libopencm3/stm32/common/adc_common_f1234.h>
 
+#define ADC_MAX_REGULAR_SEQUENCE	16
+#define ADC_MAX_CHANNELS		18
+
 /* ADC injected channel data offset register x (ADC_JOFRx) (x=1..4) */
 #define ADC_JOFR1(block)		MMIO32(block + 0x14)
 #define ADC_JOFR2(block)		MMIO32(block + 0x18)

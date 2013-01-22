@@ -114,14 +114,3 @@ void adc_disable_temperature_sensor(u32 adc)
 {
 	ADC_CCR &= ~ADC_CCR_TSVREFE;
 }
-
-// NOTE - this tramples any existing channels you had configured
-void adc_set_single_channel(u32 adc, u8 channel)
-{
-	adc_set_single_conversion_mode(adc);
-	ADC_SQR1(adc) = 0;
-	ADC_SQR5(adc) = (channel & ADC_SQR_MASK);
-}
-
-
-

@@ -11,14 +11,16 @@ This library supports the A/D Converter Control System in the STM32xx series
 of ARM Cortex Microcontrollers by ST Microelectronics.
 
 Devices can have up to three A/D converters each with their own set of registers.
-However all the A/D converters share a common clock which is prescaled from the APB2
-clock by default by a minimum factor of 2 to a maximum of 8.
- * FIXME - not true for L1
-Each A/D converter has up to 18 channels:
+However all the A/D converters share a common clock.  On most devices, this is
+prescaled from the APB2 clock by default by a minimum factor of 2 to a maximum 
+of 8, though on the L1 this is always a divider from the HSI. (And therefore HSI
+_must_ be enabled before attempting to enable the ADC)
+
+Each A/D converter has up to ADC_MAX_CHANNELS channels:
 @li On ADC1 the analog channels 16 and 17 are internally connected to the temperature
 sensor and V<sub>REFINT</sub>, respectively.
-@li On ADC2 the analog channels 16 and 17 are internally connected to V<sub>SS</sub>.
-@li On ADC3 the analog channels 9, 14, 15, 16 and 17 are internally connected to V<sub>SS</sub>.
+@li On ADC2 (if available) the analog channels 16 and 17 are internally connected to V<sub>SS</sub>.
+@li On ADC3 (if available) the analog channels 9, 14, 15, 16 and 17 are internally connected to V<sub>SS</sub>.
 
 The conversions can occur as a one-off conversion whereby the process stops once
 conversion is complete. The conversions can also be continuous wherein a new
@@ -458,7 +460,7 @@ void adc_enable_analog_watchdog_on_selected_channel(u32 adc, u8 channel)
 	u32 reg32;
 
 	reg32 = (ADC_CR1(adc) & 0xffffffe0); /* Clear bits [4:0]. */
-	if (channel < 18)
+	if (channel < ADC_MAX_CHANNELS)
 		reg32 |= channel;
 	ADC_CR1(adc) = reg32;
 	ADC_CR1(adc) |= ADC_CR1_AWDSGL;
@@ -564,10 +566,9 @@ This starts conversion on a set of defined regular channels if the ADC trigger
 is set to be a software trigger. It is cleared by hardware once conversion
 starts.
 
-Note this is a software trigger and requires triggering to be enabled and the
+Note: On the F1, this is a software trigger and requires triggering to be enabled and the
 trigger source to be set appropriately otherwise conversion will not start.
 This is not the same as the ADC start conversion operation.
- * NOTE only applies to F1!
 
 @param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
 */
@@ -578,7 +579,7 @@ void adc_start_conversion_regular(u32 adc)
 	ADC_CR2(adc) |= ADC_CR2_SWSTART;
 
 	/* Wait until the ADC starts the conversion. */
-	// FIXME KARL!!! while (ADC_CR2(adc) & ADC_CR2_SWSTART);
+	while (ADC_CR2(adc) & ADC_CR2_SWSTART);
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -744,41 +745,73 @@ void adc_set_watchdog_low_threshold(u32 adc, u16 threshold)
 	ADC_LTR(adc) = reg32;
 }
 
+/*----------------------------------------------------------------------------*/
+/** @brief ADC set a single channel
+ * 
+ * Sets the sequence length to 1 and the first entry in the sequence to the given
+ * channel.
+ * 
+ * @param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
+ * @param[in] channel Unsigned int8.  ADC Channel to be set @ref adc_channel
+ */
+void adc_set_single_channel(u32 adc, u8 channel)
+{
+	adc_set_single_conversion_mode(adc);
+	ADC_SQR1(adc) = 0;
+#if defined (ADC_SQR5)
+	ADC_SQR5(adc) = (channel & ADC_SQR_MASK);
+#else
+	ADC_SQR3(adc) = (channel & ADC_SQR_MASK);
+#endif
+}
+
 /*-----------------------------------------------------------------------------*/
 /** @brief ADC Set a Regular Channel Conversion Sequence
 
 Define a sequence of channels to be converted as a regular group with a length
-from 1 to 16 channels. If this is called during conversion, the current conversion
+from 1 to ADC_REGULAR_SEQUENCE_MAX channels. If this is called during conversion, the current conversion
 is reset and conversion begins again with the newly defined group.
 
 @param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
 @param[in] length Unsigned int8. Number of channels in the group.
-@param[in] channel Unsigned int8[]. Set of channels in sequence, integers 0..18.
+@param[in] channel Unsigned int8[]. Set of channels in sequence, integers 0..31.
 */
 
 void adc_set_regular_sequence(u32 adc, u8 length, u8 channel[])
 {
-	u32 reg32_1 = 0, reg32_2 = 0, reg32_3 = 0;
+	u32 fifth6 = 0;
+	u32 fourth6 = 0;
+	u32 third6 = 0;
+	u32 second6 = 0;
+	u32 first6 = 0;
 	u8 i = 0;
 
-	/* Maximum sequence length is 16 channels. */
-	// FIXME - not for l1!
-	if (length > 16)
+	if (length > ADC_MAX_REGULAR_SEQUENCE)
 		return;
 
 	for (i = 1; i <= length; i++) {
 		if (i <= 6)
-			reg32_3 |= (channel[i - 1] << ((i - 1) * 5));
+			 first6 |= (channel[i - 1] << ((i - 1) * 5));
 		if ((i > 6) & (i <= 12))
-			reg32_2 |= (channel[i - 1] << ((i - 6 - 1) * 5));
-		if ((i > 12) & (i <= 16))
-			reg32_1 |= (channel[i - 1] << ((i - 12 - 1) * 5));
+			second6 |= (channel[i - 1] << ((i - 6 - 1) * 5));
+		if ((i > 12) & (i <= 18))
+			third6 |= (channel[i - 1] << ((i - 12 - 1) * 5));
+		if ((i > 18) & (i <= 24))
+			fourth6 |= (channel[i - 1] << ((i - 18 - 1) * 5));
+		if ((i > 24) & (i <= 28))
+			fifth6 |= (channel[i - 1] << ((i - 24 - 1) * 5));
 	}
-	reg32_1 |= ((length -1) << ADC_SQR1_L_LSB);
-
-	ADC_SQR1(adc) = reg32_1;
-	ADC_SQR2(adc) = reg32_2;
-	ADC_SQR3(adc) = reg32_3;
+#if defined (ADC_SQR5)
+	ADC_SQR1(adc) = fifth6 | ((length -1) << ADC_SQR1_L_LSB);
+	ADC_SQR2(adc) = fourth6;
+	ADC_SQR3(adc) = third6;
+	ADC_SQR4(adc) = second6;
+	ADC_SQR5(adc) =  first6;
+#else
+	ADC_SQR1(adc) = third6 | ((length -1) << ADC_SQR1_L_LSB);
+	ADC_SQR2(adc) = second6;
+	ADC_SQR3(adc) =  first6;
+#endif
 }
 
 /*-----------------------------------------------------------------------------*/

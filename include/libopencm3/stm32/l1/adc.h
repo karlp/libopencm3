@@ -37,6 +37,10 @@ LGPL License Terms @ref lgpl_license
 #include <libopencm3/stm32/memorymap.h>
 #include <libopencm3/stm32/common/adc_common_all.h>
 
+#define ADC_MAX_REGULAR_SEQUENCE	28
+/* 26 in L/M, but 32 in two banks for M+/H density */
+#define ADC_MAX_CHANNELS		32
+
 /* ADC sample time register 3 (ADC_SMPR3) */
 #define ADC_SMPR3(block)		MMIO32(block + 0x14)
 #define ADC1_SMPR3			ADC_SMPR3(ADC1)
