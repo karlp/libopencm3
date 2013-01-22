@@ -1,20 +1,32 @@
 /*
- * Karl Palsson, 2012 <karlp@tweak.net.au
+ * This file is part of the libopencm3 project.
+ *
+ * Copyright (C) 2013 Karl Palsson <karlp@tweak.net.au>
+ *
+ * This library is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
 #include "syscfg.h"
-#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/common.h>
 #include <libopencm3/stm32/l1/rcc.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/dac.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/usart.h>
-
-
-static struct state_t state;
 
 void clock_setup(void)
 {
@@ -77,32 +89,19 @@ void adc_setup(void)
 {
 	// Make sure pins are setup for analog in!
 	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0);
-	
-	
+	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO1);
+
 	rcc_peripheral_enable_clock(&RCC_APB2ENR, RCC_APB2ENR_ADC1EN);
 	// This is not implemented for l1 yet...  rcc_set_adcpre()
 	// Use this from F4 -  adc_set_clk_prescale()
 	adc_off(ADC1);
-//	adc_disable_scan_mode(ADC1);
-	ADC1_CR1 = 0;  // 12 bit,  no scan.
-	//ADC_CR1(ADC1) = ADC_CR1_SCAN;
-//	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_4CYC);
-	ADC1_CR2 = 0;  // no triggers, right aligned...
-	//ADC_CR2(ADC1) = ADC_CR2_ALIGN_RIGHT | ADC_CR2_CONT;
+	adc_disable_scan_mode(ADC1);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_4CYC);
 
-//	ADC_SQR1(ADC1) = 0;
-//	ADC_SQR5(ADC1) = 0;
-	
-	//adc_power_on(ADC1);
-	ADC_CR2(ADC1) |= ADC_CR2_ADON;
-	
-	int i;
-	for (i = 0; i < 100000; i++) /* Wait a bit. */
-		__asm__("NOP");
+	adc_power_on(ADC1);
 	while ((ADC_SR(ADC1) & ADC_SR_ADONS) == 0) {
 		;
 	}
-
 }
 
 void dac_setup(void)
@@ -117,9 +116,6 @@ void dac_setup(void)
 
 u16 read_adc_naiive(u8 channel)
 {
-	//u8 channel_array[16];
-	//channel_array[0] = channel;
-	//adc_set_regular_sequence(ADC1, 1, channel_array);
 	adc_set_single_channel(ADC1, channel);
 	adc_start_conversion_regular(ADC1);
 	while (!adc_eoc(ADC1));
@@ -139,11 +135,11 @@ int main(void)
 	dac_setup();
 	while (1) {
 		u16 input_adc0 = read_adc_naiive(0);
-		// TODO - write input_adc0/2 to dac....
 		u16 target = input_adc0 / 2;
 		dac_load_data_buffer_single(target, RIGHT12, CHANNEL_2);
 		dac_software_trigger(CHANNEL_2);
 		u16 input_adc1 = read_adc_naiive(1);
+
 		printf("tick: %d: adc0= %u, target adc1=%d, adc1=%d\n",
 			j++, input_adc0, target, input_adc1);
 		gpio_toggle(GPIOB, GPIO7); /* LED on/off */

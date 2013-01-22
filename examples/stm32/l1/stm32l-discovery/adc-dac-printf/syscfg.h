@@ -37,10 +37,6 @@ extern "C" {
 
 #define USART_CONSOLE USART2
 
-    struct state_t {
-    };
-
-
 #ifdef	__cplusplus
 }
 #endif

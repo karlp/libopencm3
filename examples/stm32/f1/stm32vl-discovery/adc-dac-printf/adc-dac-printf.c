@@ -16,17 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
 
-#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/common.h>
+#include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/dac.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/f1/rcc.h>
-#include <libopencm3/stm32/f1/adc.h>
 
 #define LED_DISCOVERY_USER_PORT	GPIOC
 #define LED_DISCOVERY_USER_PIN	GPIO8
@@ -144,7 +143,7 @@ int main(void)
 	dac_setup();
 	gpio_set_mode(LED_DISCOVERY_USER_PORT, GPIO_MODE_OUTPUT_2_MHZ,
 		GPIO_CNF_OUTPUT_PUSHPULL, LED_DISCOVERY_USER_PIN);
-	
+
 	while (1) {
 		u16 input_adc0 = read_adc_naiive(0);
 		u16 target = input_adc0 / 2;
