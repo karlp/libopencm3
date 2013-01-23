@@ -114,11 +114,31 @@
 
 BEGIN_DECLS
 
+#define FLASH_LOCKS_EEPROM		(1 << 0)
+#define FLASH_LOCKS_PROGMEM		(1 << 1)
+#define FLASH_LOCKS_OPTBYTES		(1 << 2)
+
 void flash_64bit_enable(void);
 void flash_64bit_disable(void);
 void flash_prefetch_enable(void);
 void flash_prefetch_disable(void);
 void flash_set_ws(u32 ws);
+void flash_unlock_pecr(void);
+void flash_lock_pecr(void);
+void flash_unlock_progmem(void);
+void flash_lock_progmem(void);
+void flash_unlock_optbytes(void);
+void flash_lock_optbytes(void);
+// TODO discuss this.... bits seem more common api friendly
+// void flash_unlock(bool eeprom, bool progmem, bool optbytes);
+void flash_unlock(u32 bits);
+// TODO - should this have bits to lock again too?
+void flash_lock();
+
+// TODO - should these go in another file?
+void eeprom_program_word(u32 address, u32 data);
+
+
 
 END_DECLS
 
