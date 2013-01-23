@@ -1,0 +1,18 @@
+Console on PA2/PA3 (tx/rx)  115200@8n1
+
+* Prints the ADC value on PA0 (adc channel 0) on the console
+* Prints the ADC value on PA1 (adc channel 1) on the console
+* Echos a value saved in eeprom to DAC channel 2 (PA5)
+* When "user" button is pressed, current value of adc0 is stored in eeprom.
+
+Expected: set a value on adc0, press the button, see that adc1 switches to
+"match".  Unplug, replug, see that adc1 still shows prior value.
+
+Recommended wiring:
+* pot or any resistor ladder to PA0
+* jumper from PA5 to PA1
+
+example output:
+...
+XXX TODO
+...
