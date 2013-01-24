@@ -14,7 +14,7 @@ This library supports the flash & eeprom subsystem for the
 STM32L1 series of ARM Cortex Microcontrollers by ST Microelectronics.
 
 LGPL License Terms @ref lgpl_license
-*/
+ */
 /*
  * This file is part of the libopencm3 project.
  *
@@ -68,36 +68,43 @@ void flash_set_ws(u32 ws)
 	FLASH_ACR = reg32;
 }
 
-void flash_unlock_pecr(void) {
+void flash_unlock_pecr(void)
+{
 	FLASH_PEKEYR = FLASH_PEKEY1;
 	FLASH_PEKEYR = FLASH_PEKEY2;
 }
 
-void flash_lock_pecr(void) {
+void flash_lock_pecr(void)
+{
 	FLASH_PECR |= FLASH_PELOCK;
 }
 
-void flash_unlock_progmem(void) {
+void flash_unlock_progmem(void)
+{
 	flash_unlock_pecr();
 	FLASH_PRGKEYR = FLASH_PRGKEY1;
 	FLASH_PRGKEYR = FLASH_PRGKEY2;
 }
 
-void flash_lock_progmem(void) {
+void flash_lock_progmem(void)
+{
 	FLASH_PECR |= FLASH_PRGLOCK;
 }
 
-void flash_unlock_optbytes(void) {
+void flash_unlock_optbytes(void)
+{
 	flash_unlock_pecr();
 	FLASH_OPTKEYR = FLASH_OPTKEY1;
 	FLASH_OPTKEYR = FLASH_OPTKEY2;
 }
 
-void flash_lock_optbytes(void) {
+void flash_lock_optbytes(void)
+{
 	FLASH_PECR |= FLASH_OPTLOCK;
 }
 
-void flash_unlock(u32 bits) {
+void flash_unlock(u32 bits)
+{
 	flash_unlock_pecr();
 	if (bits & FLASH_LOCKS_EEPROM) {
 		; // nothing else to do
@@ -110,19 +117,23 @@ void flash_unlock(u32 bits) {
 	}
 }
 
-void flash_lock() {
+void flash_lock()
+{
 	flash_lock_optbytes();
 	flash_lock_progmem();
 	flash_lock_pecr();
 }
 
-/**
- * 
- * @param address
- * @param data
+/** @brief Write a word to eeprom
+
+Writes a data word to EEPROM at the requested address, erasing if necessary, 
+and locking afterwards.
+
+@param[in] address must point to EEPROM space, no checking!
+@param[in] data word to write
  */
-void eeprom_program_word(u32 address, u32 data) {
-	// slower for no real reason.... flash_unlock(FLASH_LOCKS_EEPROM);
+void eeprom_program_word(u32 address, u32 data)
+{
 	flash_unlock_pecr();
 	/* erase only if needed */
 	FLASH_PECR &= ~FLASH_FTDW;
@@ -130,3 +141,25 @@ void eeprom_program_word(u32 address, u32 data) {
 	flash_lock_pecr();
 }
 
+/** @brief Write a word to eeprom
+
+Writes a block of words to EEPROM at the requested address, erasing if necessary, 
+and locking afterwards.  Only wordwise writing is safe for writing any value
+
+@param[in] address must point to EEPROM space, no checking!
+@param[in] data pointer to data to write
+@param[in] length size of of data in WORDS!
+ */
+void eeprom_program_words(u32 address, u32 *data, int length_in_words)
+{
+	int i;
+	flash_unlock_pecr();
+	while (FLASH_SR & FLASH_BSY);
+	/* erase only if needed */
+	FLASH_PECR &= ~FLASH_FTDW;
+	for (i = 0; i < length_in_words; i++) {
+		MMIO32(address + (i * sizeof(u32))) = *(data+i);
+		while (FLASH_SR & FLASH_BSY);
+	}
+	flash_lock_pecr();
+}

@@ -19,6 +19,7 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #ifndef STM32L1  /* Helps completion in the ide... */
 #define STM32L1
@@ -44,6 +45,31 @@
 #define CHANNEL_ANALOG_TEST		4
 #define PIN_DAC				GPIO5
 #define DAC_CHANNEL			CHANNEL_2
+
+/*
+ * Packed is optional, but aligned (4) is required!
+ * (We only write out whole words to avoid dealing with the byte/hword write 
+ * problem on medium density devices)
+ */
+struct example_eeprom_blob {
+	int i;			// 4
+	bool flag;		// 1
+	int64_t ourdword;	// 8
+	uint16_t halfword;	// 2
+	bool flags_are_fun;	// 1
+	bool flags_are_really_fun;	// 1
+	float ourfloat;		// 4
+} __attribute__((packed)) __attribute__ ((aligned (4)));
+
+//#define EEMEM __attribute__((section(".eeprom")))
+
+/*
+ * We can read directly out of eeprom, but we can't write to it easily,
+ * so we have a ram copy that we modify then write back to eeprom as a blob
+ */
+// Couldn't get eeprom sections to do anything worth a damn :(
+struct example_eeprom_blob *blob_eeprom = 0x08080040;
+struct example_eeprom_blob blob_ram;
 
 void clock_setup(void)
 {
@@ -148,12 +174,23 @@ u16 read_adc_naiive(u8 channel)
 	return reg16;
 }
 
+void dumpblob(const char *tag, struct example_eeprom_blob *blob) {
+	printf("%s: i:%d, flag:%d, flag2:%d, half:%hu, dword=%lld, float=%f\n",
+		tag, blob->i, blob->flag, blob->flags_are_fun,
+		blob->halfword, blob->ourdword, blob->ourfloat);
+}
+
 int main(void)
 {
 	volatile int loopticks = 0;
+	volatile bool gdbhacking = false;
 	clock_setup();
 	usart_setup();
-	puts("hi guys!\n");
+	printf("hello! sizeof eepromblob = %d, address=%#lx\n", 
+		sizeof(struct example_eeprom_blob), (u32)blob_eeprom);
+	memcpy(&blob_ram, blob_eeprom, sizeof(struct example_eeprom_blob));
+	dumpblob("ram", &blob_ram);
+	
 	gpio_mode_setup(PORT_DISCOVERY_USER_LED, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, PIN_DISCOVERY_USER_LED);
 	gpio_mode_setup(PORT_DISCOVERY_USER_BUTTON, GPIO_MODE_INPUT, GPIO_PUPD_NONE, PIN_DISCOVERY_USER_BUTTON);
 	adc_setup();
@@ -171,12 +208,16 @@ int main(void)
 
 		if (loopticks % 100000 == 0) {
 			printf("tick: %d: source= %hu, eeprom=%lu, test=%hu\n",
-				loopticks, source, eeprom_variable, test);
+				loopticks / 100000, source, eeprom_variable, test);
 		}
 		
 		if (gpio_get(PORT_DISCOVERY_USER_BUTTON, PIN_DISCOVERY_USER_BUTTON)) {
 			printf("trying to save %u as new target\n", source);
 			eeprom_program_word(eeprom_addr, source);
+		}
+		if (gdbhacking) {
+			gdbhacking = false;
+			eeprom_program_words((u32)blob_eeprom, (u32*)&blob_ram, sizeof(struct example_eeprom_blob) / 4);
 		}
 		
 		if (loopticks % 100000 == 0) {  /* LED on/off */

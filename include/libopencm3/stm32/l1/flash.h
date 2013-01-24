@@ -114,9 +114,14 @@
 
 BEGIN_DECLS
 
+/** @defgroup flash_lock_flags Flash lock flags
+@ingroup flash_defines
+
+@{*/
 #define FLASH_LOCKS_EEPROM		(1 << 0)
 #define FLASH_LOCKS_PROGMEM		(1 << 1)
 #define FLASH_LOCKS_OPTBYTES		(1 << 2)
+/**@}*/
 
 void flash_64bit_enable(void);
 void flash_64bit_disable(void);
@@ -137,6 +142,7 @@ void flash_lock();
 
 // TODO - should these go in another file?
 void eeprom_program_word(u32 address, u32 data);
+void eeprom_program_words(u32 address, u32 *data, int length);
 
 
 
