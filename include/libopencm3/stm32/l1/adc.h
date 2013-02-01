@@ -135,46 +135,61 @@ LGPL License Terms @ref lgpl_license
 /* --- ADC_CR2 values ------------------------------------------------------- */
 /* SWSTART: */ /** Start conversion of regular channels. */
 #define ADC_CR2_SWSTART			(1 << 30)
-#define ADC_CR2_EXTEN_DISABLED		0
-#define ADC_CR2_EXTEN_RISING		1
-#define ADC_CR2_EXTEN_FALLING		2
-#define ADC_CR2_EXTEN_BOTH		3
+
+/* EXTEN[1:0]: External trigger enable for regular channels. */
+/****************************************************************************/
 #define ADC_CR2_EXTEN_SHIFT		28
-#define ADC_CR2_EXTEN_MASK		0x3
+#define ADC_CR2_EXTEN_MASK		(0x3 << ADC_CR2_EXTEN_SHIFT)
+/** @defgroup adc_trigger_polarity_regular ADC Trigger Polarity
+@ingroup STM32L1xx_adc_defines
+@{*/
+#define ADC_CR2_EXTEN_DISABLED		(0x0 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTEN_RISING_EDGE	(0x1 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTEN_FALLING_EDGE	(0x2 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTEN_BOTH_EDGES	(0x3 << ADC_CR2_EXTEN_SHIFT)
+/**@}*/
 
 /* EXTSEL[3:0]: External event selection for regular group. */
 /****************************************************************************/
+#define ADC_CR2_EXTSEL_SHIFT		24
+#define ADC_CR2_EXTSEL_MASK		(0xf << ADC_CR2_EXTSEL_SHIFT)
 /** @defgroup adc_trigger_regular ADC Trigger Identifier for Regular group
 @ingroup STM32L1xx_adc_defines
 
 @{*/
-#define ADC_CR2_EXTSEL_TIM9_CC2		0
-#define ADC_CR2_EXTSEL_TIM9_TRGO	1
-#define ADC_CR2_EXTSEL_TIM2_CC3		2
-#define ADC_CR2_EXTSEL_TIM2_CC2		3
-#define ADC_CR2_EXTSEL_TIM3_TRGO	4
-#define ADC_CR2_EXTSEL_TIM4_CC4		5
-#define ADC_CR2_EXTSEL_TIM2_TRGO	6
-#define ADC_CR2_EXTSEL_TIM3_CC1		7
-#define ADC_CR2_EXTSEL_TIM3_CC3		8
-#define ADC_CR2_EXTSEL_TIM4_TRGO	9
-#define ADC_CR2_EXTSEL_TIM6_TRGO	10
+#define ADC_CR2_EXTSEL_TIM9_CC2		(0 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM9_TRGO	(1 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM2_CC3		(2 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM2_CC2		(3 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM3_TRGO	(4 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM4_CC4		(5 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM2_TRGO	(6 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM3_CC1		(7 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM3_CC3		(8 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM4_TRGO	(9 << ADC_CR2_EXTEN_SHIFT)
+#define ADC_CR2_EXTSEL_TIM6_TRGO	(10 << ADC_CR2_EXTEN_SHIFT)
 // reserved....
-#define ADC_CR2_EXTSEL_EXTI11		15
+#define ADC_CR2_EXTSEL_EXTI11		(15 << ADC_CR2_EXTEN_SHIFT)
 /**@}*/
-#define ADC_CR2_EXTSEL_SHIFT		24
-#define ADC_CR2_EXTSEL_MASK		0xf
 
 #define ADC_CR2_JSWSTART		(1 << 22)
-#define ADC_CR2_JEXTEN_DISABLED		0
-#define ADC_CR2_JEXTEN_RISING		1
-#define ADC_CR2_JEXTEN_FALLING		2
-#define ADC_CR2_JEXTEN_BOTH		3
+
+/* JEXTEN[1:0]: External trigger enable for injected channels. */
+/****************************************************************************/
 #define ADC_CR2_JEXTEN_SHIFT		20
-#define ADC_CR2_JEXTEN_MASK		0x3
+#define ADC_CR2_JEXTEN_MASK		(0x3 << ADC_CR2_JEXTEN_SHIFT)
+/** @defgroup adc_trigger_polarity_injected ADC Injected Trigger Polarity
+@ingroup STM32L1xx_adc_defines
+@{*/
+#define ADC_CR2_JEXTEN_DISABLED		(0x0 << ADC_CR2_JEXTEN_SHIFT)
+#define ADC_CR2_JEXTEN_RISING_EDGE	(0x1 << ADC_CR2_JEXTEN_SHIFT)
+#define ADC_CR2_JEXTEN_FALLING_EDGE	(0x2 << ADC_CR2_JEXTEN_SHIFT)
+#define ADC_CR2_JEXTEN_BOTH_EDGES	(0x3 << ADC_CR2_JEXTEN_SHIFT)
+/**@}*/
+
 // FIXME - add the values here
 #define ADC_CR2_JEXTSEL_SHIFT		16
-#define ADC_CR2_JEXTSEL_MASK		0xf
+#define ADC_CR2_JEXTSEL_MASK		(0xf << ADC_CR2_JEXTSEL_SHIFT)
 
 #define ADC_CR2_EOCS			(1 << 10)
 #define ADC_CR2_DDS			(1 << 9)
@@ -207,5 +222,8 @@ LGPL License Terms @ref lgpl_license
 #define ADC_SQR_MASK			0x1f
 
 #define ADC_CCR_TSVREFE			(1 << 23)
+// These are same as in f4, see what else can be merged
+void adc_enable_external_trigger_regular(u32 adc, u32 trigger, u32 polarity);
+void adc_enable_external_trigger_injected(u32 adc, u32 trigger, u32 polarity);
 
 #endif

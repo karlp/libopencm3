@@ -99,6 +99,7 @@ This enables both the sensor and the reference voltage measurements on channels
 
 void adc_enable_temperature_sensor(u32 adc)
 {
+	(void)adc; // Unused on L1
 	ADC_CCR |= ADC_CCR_TSVREFE;
 }
 
@@ -113,5 +114,41 @@ voltage measurements.
 
 void adc_disable_temperature_sensor(u32 adc)
 {
+	(void)adc; // Unused on L1
 	ADC_CCR &= ~ADC_CCR_TSVREFE;
 }
+
+
+// TODO - these are copied from the F4 code! (F1 doesn't support polarity...)
+/*-----------------------------------------------------------------------------*/
+/** @brief ADC Enable an External Trigger for Regular Channels
+
+This enables an external trigger for set of defined regular channels, and sets the
+polarity of the trigger event: rising or falling edge or both. Note that if the
+trigger polarity is zero, triggering is disabled.
+
+@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base
+@param[in] trigger Unsigned int32. Trigger identifier @ref adc_trigger_regular
+@param[in] polarity Unsigned int32. Trigger polarity @ref adc_trigger_polarity_regular
+*/
+
+void adc_enable_external_trigger_regular(u32 adc, u32 trigger, u32 polarity)
+{
+	u32 reg32 = ADC_CR2(adc);
+
+	reg32 &= ~(ADC_CR2_EXTSEL_MASK | ADC_CR2_EXTEN_MASK);
+	reg32 |= (trigger | polarity);
+	ADC_CR2(adc) = reg32;
+}
+
+/*-----------------------------------------------------------------------------*/
+/** @brief ADC Disable an External Trigger for Regular Channels
+
+@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base
+*/
+
+void adc_disable_external_trigger_regular(u32 adc)
+{
+	ADC_CR2(adc) &= ~ADC_CR2_EXTEN_MASK;
+}
+

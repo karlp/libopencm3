@@ -370,4 +370,8 @@ LGPL License Terms @ref lgpl_license
 #define ADC_SQR3_SQ2_MSK		(0x1f << ADC_SQR3_SQ2_LSB)
 #define ADC_SQR3_SQ1_MSK		(0x1f << ADC_SQR3_SQ1_LSB)
 
+
+void adc_enable_external_trigger_regular(u32 adc, u32 trigger);
+void adc_enable_external_trigger_injected(u32 adc, u32 trigger);
+
 #endif
