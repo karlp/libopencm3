@@ -142,7 +142,26 @@ LGPL License Terms @ref lgpl_license
 #define ADC_CR2_EXTEN_SHIFT		28
 #define ADC_CR2_EXTEN_MASK		0x3
 
-// FIXME - add the values here
+/* EXTSEL[3:0]: External event selection for regular group. */
+/****************************************************************************/
+/** @defgroup adc_trigger_regular ADC Trigger Identifier for Regular group
+@ingroup STM32L1xx_adc_defines
+
+@{*/
+#define ADC_CR2_EXTSEL_TIM9_CC2		0
+#define ADC_CR2_EXTSEL_TIM9_TRGO	1
+#define ADC_CR2_EXTSEL_TIM2_CC3		2
+#define ADC_CR2_EXTSEL_TIM2_CC2		3
+#define ADC_CR2_EXTSEL_TIM3_TRGO	4
+#define ADC_CR2_EXTSEL_TIM4_CC4		5
+#define ADC_CR2_EXTSEL_TIM2_TRGO	6
+#define ADC_CR2_EXTSEL_TIM3_CC1		7
+#define ADC_CR2_EXTSEL_TIM3_CC3		8
+#define ADC_CR2_EXTSEL_TIM4_TRGO	9
+#define ADC_CR2_EXTSEL_TIM6_TRGO	10
+// reserved....
+#define ADC_CR2_EXTSEL_EXTI11		15
+/**@}*/
 #define ADC_CR2_EXTSEL_SHIFT		24
 #define ADC_CR2_EXTSEL_MASK		0xf
 
