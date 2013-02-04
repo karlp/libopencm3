@@ -34,6 +34,7 @@ OBJS +=     gpio_common_all.o gpio_common_f24.o spi_common_all.o crc_common_all.
 OBJS +=     dac_common_all.o usart_common_all.o iwdg_common_all.o i2c_common_all.o
 OBJS +=     pwr_common_all.o pwr.o
 OBJS +=     rtc_common_bcd.o
+OBJS +=     dma_common_f13.o
 
 VPATH += ../../usb:../:../../cm3:../common
 
