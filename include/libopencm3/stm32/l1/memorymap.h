@@ -109,6 +109,9 @@
 /* Device Electronic Signature */
 #define DESIG_FLASH_SIZE_BASE           (INFO_BASE + 0x8004C)
 #define DESIG_UNIQUE_ID_BASE            (INFO_BASE + 0x80050)
+#define DESIG_UNIQUE_ID0		MMIO32(DESIG_UNIQUE_ID_BASE)
+#define DESIG_UNIQUE_ID1		MMIO32(DESIG_UNIQUE_ID_BASE + 4)
+#define DESIG_UNIQUE_ID2		MMIO32(DESIG_UNIQUE_ID_BASE + 0x14)
 
 /* Make the map names match those for other families to allow commonality */
 #define SPI1_I2S_BASE       SPI1_BASE
