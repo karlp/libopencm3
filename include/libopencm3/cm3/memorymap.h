@@ -32,15 +32,6 @@
 /* PPBI_BASE + 0xF000 (0xE000 F000 - 0xE003 FFFF): Reserved */
 #define TPIU_BASE                       (PPBI_BASE + 0x40000)
 
-/* --- ITM: Instrumentation Trace Macrocell --- */
-/* TODO */
-
-/* --- DWT: Data Watchpoint and Trace unit --- */
-/* TODO */
-
-/* --- FPB: Flash Patch and Breakpoint unit --- */
-/* TODO */
-
 /* --- SCS: System Control Space --- */
 
 /* ITR: Interrupt Type Register */
