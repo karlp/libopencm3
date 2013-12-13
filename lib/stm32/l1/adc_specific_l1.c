@@ -152,3 +152,13 @@ void adc_disable_external_trigger_regular(u32 adc)
 	ADC_CR2(adc) &= ~ADC_CR2_EXTEN_MASK;
 }
 
+/*-----------------------------------------------------------------------------*/
+/** @brief ADC Disable an External Trigger for Injected Channels
+
+@param[in] adc Unsigned int32. ADC block register address base @ref adc_reg_base.
+*/
+
+void adc_disable_external_trigger_injected(u32 adc)
+{
+	ADC_CR2(adc) &= ~ADC_CR2_JEXTEN_MASK;
+}
