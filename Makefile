@@ -35,6 +35,7 @@ TARGETS += efm32/tg efm32/g efm32/lg efm32/gg
 TARGETS += sam/3a sam/3n sam/3s sam/3u sam/3x
 TARGETS += sam/d
 TARGETS += vf6xx
+TARGETS += imx6
 
 # Be silent per default, but 'make V=1' will show all compiler calls.
 ifneq ($(V),1)

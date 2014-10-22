@@ -33,6 +33,7 @@ include/libopencmsis/lpc43xx/
 include/libopencmsis/sam/
 include/libopencmsis/stm32/
 include/libopencmsis/vf6xx/
+include/libopencmsis/imx6/
 
 # netbeans, intellij, eclipse project files
 nbproject/
