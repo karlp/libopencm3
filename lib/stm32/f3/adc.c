@@ -963,7 +963,7 @@ void adc_set_multi_mode(uint32_t mode)
  *
  * @param[in] adc Unsigned int32. ADC block register address base @ref
  * adc_reg_base
- * @param[in] trigger Unsigned int32. Trigger identifier
+ * @param[in] trigger Unsigned int32. Trigger identifier (logical, 0..15)
  * @ref adc_trigger_regular
  * @param[in] polarity Unsigned int32. Trigger polarity @ref
  * adc_trigger_polarity_regular
@@ -974,8 +974,8 @@ void adc_enable_external_trigger_regular(uint32_t adc, uint32_t trigger,
 {
 	uint32_t reg32 = ADC_CFGR(adc);
 
-	reg32 &= ~(ADC_CFGR_EXTSEL_MASK | ADC_CFGR_EXTEN_MASK);
-	reg32 |= (trigger | polarity);
+	reg32 &= ~((ADC_CFGR_EXTSEL_MASK << ADC_CFGR_EXTSEL_SHIFT) | ADC_CFGR_EXTEN_MASK);
+	reg32 |= (trigger << ADC_CFGR_EXTSEL_SHIFT| polarity);
 	ADC_CFGR(adc) = reg32;
 }
 

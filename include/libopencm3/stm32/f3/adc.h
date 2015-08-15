@@ -438,24 +438,26 @@
 #define ADC_CFGR_EXTEN_MASK		(0x3 << 10)
 
 /* EXTSEL[3:0]: External trigger selection for regular group */
-#define ADC_CFGR_EXTSEL_EVENT_0		(0x0 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_1		(0x1 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_2		(0x2 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_3		(0x3 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_4		(0x4 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_5		(0x5 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_6		(0x6 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_7		(0x7 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_8		(0x8 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_9		(0x9 << 6)
-#define ADC_CFGR_EXTSEL_EVENT_10	(0xA << 6)
-#define ADC_CFGR_EXTSEL_EVENT_11	(0xB << 6)
-#define ADC_CFGR_EXTSEL_EVENT_12	(0xC << 6)
-#define ADC_CFGR_EXTSEL_EVENT_13	(0xD << 6)
-#define ADC_CFGR_EXTSEL_EVENT_14	(0xE << 6)
-#define ADC_CFGR_EXTSEL_EVENT_15	(0xF << 6)
+/** Don't use these, only here for compatibility.... */
+#define ADC_CFGR_EXTSEL_EVENT_0		0
+#define ADC_CFGR_EXTSEL_EVENT_1		1
+#define ADC_CFGR_EXTSEL_EVENT_2		2
+#define ADC_CFGR_EXTSEL_EVENT_3		3
+#define ADC_CFGR_EXTSEL_EVENT_4		4
+#define ADC_CFGR_EXTSEL_EVENT_5		5
+#define ADC_CFGR_EXTSEL_EVENT_6		6
+#define ADC_CFGR_EXTSEL_EVENT_7		7
+#define ADC_CFGR_EXTSEL_EVENT_8		8
+#define ADC_CFGR_EXTSEL_EVENT_9		9
+#define ADC_CFGR_EXTSEL_EVENT_10	10
+#define ADC_CFGR_EXTSEL_EVENT_11	11
+#define ADC_CFGR_EXTSEL_EVENT_12	12
+#define ADC_CFGR_EXTSEL_EVENT_13	13
+#define ADC_CFGR_EXTSEL_EVENT_14	14
+#define ADC_CFGR_EXTSEL_EVENT_15	15
 
-#define ADC_CFGR_EXTSEL_MASK		(0xF << 6)
+#define ADC_CFGR_EXTSEL_SHIFT		6
+#define ADC_CFGR_EXTSEL_MASK		0xF
 
 /* ALIGN: Data alignment */
 #define ADC_CFGR_ALIGN		(1 << 5)
