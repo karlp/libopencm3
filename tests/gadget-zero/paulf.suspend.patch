@@ -1,0 +1,27 @@
+A5 is a led to indicate this behaviour.
+
+static void usb_suspend_callback(void)
+{
+	gpio_set(GPIOA, GPIO5);
+	*USB_CNTR_REG |= USB_CNTR_FSUSP;
+	*USB_CNTR_REG |= USB_CNTR_LP_MODE;
+	SCB_SCR |= SCB_SCR_SLEEPDEEP;
+	__WFI();
+}
+
+void usb_wakeup_isr(void)
+{
+	exti_reset_request(EXTI18);
+	rcc_clock_setup_in_hse_8mhz_out_72mhz();
+	*USB_CNTR_REG &= ~USB_CNTR_FSUSP;
+	gpio_clear(GPIOA, GPIO5);
+}
+
+...
+
+	exti_set_trigger(EXTI18, EXTI_TRIGGER_RISING);
+	exti_enable_request(EXTI18);
+	nvic_enable_irq(NVIC_USB_WAKEUP_IRQ);
+...
+	usbd_register_suspend_callback(usbd_dev, usb_suspend_callback);
+...
