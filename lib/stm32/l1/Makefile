@@ -22,7 +22,7 @@ SRCLIBDIR	?= ../..
 
 PREFIX		?= arm-none-eabi
 
-CC		= $(PREFIX)-gcc
+CC		?= $(PREFIX)-gcc
 AR		= $(PREFIX)-ar
 TGT_CFLAGS	= -Os \
 		  -Wall -Wextra -Wimplicit-function-declaration \
