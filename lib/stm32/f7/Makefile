@@ -46,8 +46,8 @@ OBJS		= flash.o pwr.o rcc.o
 OBJS		+= gpio.o gpio_common_all.o gpio_common_f0234.o
 
 OBJS		+= rcc_common_all.o
-
 OBJS		+= rng_common_v1.o
+OBJS		+= timer_common_all.o
 
 OBJS		+= usart_common_all.o usart_common_v2.o
 
