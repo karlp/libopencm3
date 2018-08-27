@@ -40,6 +40,9 @@ int main(void)
 	rcc_periph_clock_enable(RCC_SYSCFG);
 	rcc_periph_clock_enable(RCC_OTGFS);
 
+	// now set pll48clock source? (should have been reset default)
+	RCC_DCKCFGR2 &= ~(RCC_DCKCFGR2_CK48MSEL);
+
 	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO11 | GPIO12);
 	gpio_set_af(GPIOA, GPIO_AF10, GPIO11 | GPIO12);
 
