@@ -114,7 +114,6 @@ void adc_disable_discontinuous_mode(uint32_t adc)
 /** @brief ADC Set conversion operation mode
  *
  * @note on SEQUENTIAL mode, the trigger event is necessary to start conversion.
- * @par
  *
  * @param[in] adc Unsigned int32. ADC base address (@ref adc_reg_base)
  * @param[in] opmode ADC operation mode

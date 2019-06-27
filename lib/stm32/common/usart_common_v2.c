@@ -201,7 +201,7 @@ void usart_disable_rx_timeout(uint32_t usart)
 /** @brief USART enable receive timeout interrupt
 
  An interrupt is generated when the RTOF Flag is set
- in the ISR @ref usart_isr register.
+ in the USART_ISR register.
 
  @note If the USART does not support the Receiver timeout feature,
  this bit is reserved and forced by hardware to ‘0’.
@@ -291,12 +291,10 @@ void usart_wait_recv_ready(uint32_t usart)
 /*---------------------------------------------------------------------------*/
 /** @brief USART Read a Status Flag.
  *
- * @param[in] usart unsigned 32 bit. USART block register address base @ref
- * usart_reg_base
- * @param[in] flag Unsigned int32. Status register flag  @ref usart_sr_flags.
+ * @param usart USART block register address base @ref usart_reg_base
+ * @param flag Status register flag  @ref usart_isr_values
  * @returns boolean: flag set.
  */
-
 bool usart_get_flag(uint32_t usart, uint32_t flag)
 {
 	return ((USART_ISR(usart) & flag) != 0);
